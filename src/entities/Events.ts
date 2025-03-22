@@ -19,6 +19,9 @@ export class Events extends BaseEntity{
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
+  @Column("int", { name: "secondary_local_id", nullable: true })
+  secondaryLocalId: number | null;
+
   @Column("varchar", { name: "name", length: 100 })
   name: string;
 
@@ -73,7 +76,7 @@ export class Events extends BaseEntity{
     onDelete: "NO ACTION",
     onUpdate: "NO ACTION",
   })
-  @JoinColumn([{ name: "local_id", referencedColumnName: "id" }])
+  @JoinColumn([{ name: "secondary_local_id", referencedColumnName: "id" }])
   local_2: Locals;
 
   @OneToMany(() => ImagesEvents, (imagesEvents) => imagesEvents.event)

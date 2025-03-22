@@ -7,6 +7,7 @@ import { hashPassword, verifyPassword } from "../utils/encryption";
 import TokenUtils from "../utils/token";
 
 // Crear un nuevo administrador
+
 export const createAdmin: RequestHandler = async (req, res) => {
   try {
     const { name, email, password, roleId } = req.body;

@@ -22,11 +22,12 @@ import { Roles } from "./entities/Roles";
 import { Services } from "./entities/Services";
 import { Users } from "./entities/Users";
 
-import { DB_HOST, DB_USER, DB_PASS, DB_PORT, DB_NAME } from "./config";
-
 import dotenv from "dotenv";
 
 dotenv.config();
+import { DB_HOST, DB_USER, DB_PASS, DB_PORT, DB_NAME } from "./config";
+
+
 
 export const AppDataSource = new DataSource({
   type: "mysql",

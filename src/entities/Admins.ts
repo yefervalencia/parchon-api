@@ -25,7 +25,7 @@ export class Admins extends BaseEntity{
   @Column("varchar", { name: "password", length: 255 })
   password: string;
 
-  @Column("int", { name: "role_id", nullable: true })
+  @Column("int", { name: "role_id", nullable: true , default: 3  })
   roleId: number | null;
 
   @Column("timestamp", {

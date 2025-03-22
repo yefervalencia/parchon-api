@@ -37,7 +37,7 @@ export class Owners extends BaseEntity {
   @Column("varchar", { name: "password", length: 255 })
   password: string;
 
-  @Column("int", { name: "role_id" })
+  @Column("int", { name: "role_id", default: 2  })
   roleId: number;
 
   @Column("timestamp", {

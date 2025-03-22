@@ -39,7 +39,7 @@ export class Users extends BaseEntity{
   @Column("int", { name: "city_id", nullable: true })
   cityId: number | null;
 
-  @Column("int", { name: "role_id", nullable: true })
+  @Column("int", { name: "role_id", nullable: true, default: 1  })
   roleId: number | null;
 
   @Column("timestamp", {
