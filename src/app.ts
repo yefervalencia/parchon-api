@@ -24,6 +24,7 @@ import imageEventRouter from "./routes/imageEvent.routes";
 import imageLocalRouter from "./routes/imageLocal.routes";
 import imagePlaceRouter from "./routes/imagePlace.routes";
 import imageServiceRouter from "./routes/imageService.routes";
+import authRouter from "./routes/auth.routes";
 
 import { FRONT_URL } from "./config";
 import { ImagesLocals } from "./entities/ImagesLocals";
@@ -69,5 +70,6 @@ router.use("/imageEvents", imageEventRouter);
 router.use("/imageLocals", imageLocalRouter);
 router.use("/imagePlaces", imagePlaceRouter);
 router.use("/imageServices", imageServiceRouter);
+router.use("/auth",authRouter);
 
 export default app;
