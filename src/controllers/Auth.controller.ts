@@ -9,7 +9,7 @@ import { Cities } from "../entities/Cities";
 import { hashPassword, verifyPassword } from "../utils/encryption";
 import TokenUtils from "../utils/token";
 
-export const register: RequestHandler = async (req, res) => {
+export const register: RequestHandler = async (req, res): Promise<void> => {
   try {
     const { roleId } = req.body;
 
@@ -36,13 +36,28 @@ export const register: RequestHandler = async (req, res) => {
           password,
           cellphone,
           birthDate,
-          cityId,
+          cityName,
         } = req.body;
 
-        const city = await Cities.findOneBy({ id: cityId });
+        if (!cityName) {
+          res.status(400).json({ message: "City name is required" });
+        }
+
+        const city = await Cities.createQueryBuilder("city")
+          .where("LOWER(city.name) = LOWER(:name)", { name: cityName.trim() })
+          .getOne();
+
         if (!city) {
           res.status(400).json({ message: "City not found" });
-          return;
+        }
+        const emailExists = await Users.findOne({
+          where: { email: email.toLowerCase().trim() },
+        });
+        if (emailExists) {
+          res.status(400).json({ 
+            message: "El email ya está registrado",
+            errorCode: "EMAIL_ALREADY_EXISTS" // Código de error específico
+          });
         }
 
         const user = new Users();
@@ -52,7 +67,7 @@ export const register: RequestHandler = async (req, res) => {
         user.password = hashPassword(password);
         user.cellphone = cellphone;
         user.birthDate = birthDate;
-        user.city = city;
+        user.city = city as Cities;
         user.roleId = roleId;
 
         await user.save();
@@ -77,6 +92,12 @@ export const register: RequestHandler = async (req, res) => {
           password: ownerPassword,
         } = req.body;
 
+        const emailExistsOwner = await Owners.findOne({
+          where: { email: email.toLowerCase().trim() },
+        });
+        if (emailExistsOwner) {
+          res.status(400).json({ message: "El email ya está registrado" });
+        }
         const owner = new Owners();
         owner.name = ownerName;
         owner.lastName = ownerLastName;
@@ -151,19 +172,26 @@ export const register: RequestHandler = async (req, res) => {
 };
 
 // Login genérico para todos los tipos de usuarios
-export const login: RequestHandler = async (req, res) => {
+export const login: RequestHandler = async (req, res) : Promise<void> => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      res.status(400).json({ 
+        message: "Email y contraseña son requeridos",
+        errorCode: "MISSING_CREDENTIALS"
+      });
+    }
+
     let user: Users | Owners | Admins | null = await Users.findOne({
-      where: { email },
+      where: { email : email.toLowerCase().trim() },
       select: ["id", "name", "lastName", "email", "password"],
       relations: ["role"],
     });
 
     if (!user) {
       user = await Owners.findOne({
-        where: { email },
+        where: { email: email.toLowerCase().trim()},
         select: ["id", "name", "lastName", "email", "password"],
         relations: ["role"],
       });
@@ -171,14 +199,18 @@ export const login: RequestHandler = async (req, res) => {
 
     if (!user) {
       user = await Admins.findOne({
-        where: { email },
+        where: { email: email.toLowerCase().trim() },
         select: ["id", "name", "email", "password"],
         relations: ["role"],
       });
     }
+    
 
     if (!user || !verifyPassword(password, user.password)) {
-      res.status(401).json({ message: "Invalid credentials" });
+       res.status(401).json({ 
+        message: "Credenciales inválidas",
+        errorCode: "INVALID_CREDENTIALS"
+      });
     }
 
     let tokenPayload;
@@ -222,25 +254,37 @@ export const login: RequestHandler = async (req, res) => {
       path: "/",
     });
 
-    res.status(200).json({ message: "Login successful", user });
+    const { password: userPassword, ...userResponse } = user;
+
+    res.status(200).json({ 
+      message: "Login exitoso",
+      user: userResponse,
+      token 
+    });
   } catch (err) {
-    if (err instanceof Error) {
-      res.status(500).json({ message: err.message });
-    }
-    res.status(500).json({ message: "Unknown error occurred" });
+    console.error("Error en login:", err);
+      res.status(500).json({ 
+      message: "Error interno del servidor",
+      errorCode: "SERVER_ERROR"
+    });
   }
 };
 
 // Logout genérico
 export const logout: RequestHandler = (req, res) => {
+  try{ 
   res
     .clearCookie(COOKIE_SECRET_KEY, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
+      path:"/"
     })
     .status(200)
     .json({ message: "Logged out successfully" });
+  }catch (err){
+    res.status(500).json({ message: "Error al cerrar sesion" });
+  }
 };
 
 // Obtener usuario actual mediante cookie
@@ -249,36 +293,78 @@ export const getCurrentUser: RequestHandler = async (req, res) => {
     const userId = TokenUtils.getUserIdFromRequest(req);
     const role = TokenUtils.getRoleFromRequest(req);
 
+    // Validación más estricta
     if (!userId || !role) {
-      res.status(401).json({ message: "No token provided or invalid token" });
+       res.status(401).json({ 
+        message: "No autorizado - Token inválido o faltante",
+        errorCode: "INVALID_TOKEN"
+      });
+      return;
+    }
+
+    // Validar que el role sea uno de los permitidos
+    const validRoles = ['user', 'owner', 'admin'];
+    if (!validRoles.includes(role.toLowerCase())) {
+       res.status(400).json({ 
+        message: "Tipo de rol inválido",
+        errorCode: "INVALID_ROLE"
+      });
       return;
     }
 
     let user;
-    switch (role.toLowerCase()) {
-      case "user":
-        user = await Users.findOneBy({ id: userId });
-        break;
-      case "owner":
-        user = await Owners.findOneBy({ id: userId });
-        break;
-      case "admin":
-        user = await Admins.findOneBy({ id: userId });
-        break;
-      default:
-        res.status(400).json({ message: "Invalid role" });
+    try {
+      switch (role.toLowerCase()) {
+        case "user":
+          user = await Users.findOne({
+            where: { id: userId },
+            relations: ["city", "role"], 
+            select: ["id", "name", "lastName", "email", "cellphone", "birthDate"] 
+          });
+          break;
+        case "owner":
+          user = await Owners.findOne({
+            where: { id: userId },
+            relations: ["role"],
+            select: ["id", "name", "lastName", "email", "cellphone", "identification"]
+          });
+          break;
+        case "admin":
+          user = await Admins.findOne({
+            where: { id: userId },
+            relations: ["role"],
+            select: ["id", "name", "email"]
+          });
+          break;
+      }
+
+      if (!user) {
+         res.status(404).json({ 
+          message: "Usuario no encontrado",
+          errorCode: "USER_NOT_FOUND"
+        });
+        return;
+
+      }
+
+      const { password, ...safeUserData } = user;
+
+       res.status(200).json(safeUserData);
+
+    } catch (dbError) {
+      console.error("Error en consulta a la base de datos:", dbError);
+       res.status(500).json({ 
+        message: "Error al obtener informacion del usuario",
+        errorCode: "DB_ERROR"
+      });
     }
 
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
-    }
-
-    res.json(user);
   } catch (err) {
-    if (err instanceof Error) {
-      res.status(500).json({ message: err.message });
-    }
-    res.status(500).json({ message: "Unknown error occurred" });
+    console.error("Error en getCurrentUser:", err);
+     res.status(500).json({ 
+      message: "Error interno del servidor",
+      errorCode: "SERVER_ERROR"
+    });
   }
 };
 
