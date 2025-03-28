@@ -24,10 +24,10 @@ import imageEventRouter from "./routes/imageEvent.routes";
 import imageLocalRouter from "./routes/imageLocal.routes";
 import imagePlaceRouter from "./routes/imagePlace.routes";
 import imageServiceRouter from "./routes/imageService.routes";
+import { ImagesLocals } from "./entities/ImagesLocals";
 import authRouter from "./routes/auth.routes";
 
 import { FRONT_URL } from "./config";
-import { ImagesLocals } from "./entities/ImagesLocals";
 
 const app = express();
 const router = express.Router();
