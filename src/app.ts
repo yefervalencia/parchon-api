@@ -25,6 +25,7 @@ import imageLocalRouter from "./routes/imageLocal.routes";
 import imagePlaceRouter from "./routes/imagePlace.routes";
 import imageServiceRouter from "./routes/imageService.routes";
 import authRouter from "./routes/auth.routes";
+import { errorHandler } from "./middlewares/errorHandler";
 
 import { FRONT_URL } from "./config";
 import { ImagesLocals } from "./entities/ImagesLocals";
@@ -46,6 +47,7 @@ app.options("*", cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(errorHandler);
 
 app.use("/api/v1", router);
 

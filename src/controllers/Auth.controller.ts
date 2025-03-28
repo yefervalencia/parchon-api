@@ -1,4 +1,4 @@
-import { RequestHandler } from "express";
+import { RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET_KEY, COOKIE_SECRET_KEY } from "../config";
 import { Admins } from "../entities/Admins";
@@ -172,103 +172,101 @@ export const register: RequestHandler = async (req, res): Promise<void> => {
 };
 
 // Login genérico para todos los tipos de usuarios
-export const login: RequestHandler = async (req, res) : Promise<void> => {
+export const login: RequestHandler = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
+    // Validación básica
     if (!email || !password) {
-      res.status(400).json({ 
-        message: "Email y contraseña son requeridos",
-        errorCode: "MISSING_CREDENTIALS"
+      res.status(400).json({
+        errorCode: "MISSING_CREDENTIALS",
+        message: "Email y contraseña son requeridos"
       });
-    }
-
-    let user: Users | Owners | Admins | null = await Users.findOne({
-      where: { email : email.toLowerCase().trim() },
-      select: ["id", "name", "lastName", "email", "password"],
-      relations: ["role"],
-    });
-
-    if (!user) {
-      user = await Owners.findOne({
-        where: { email: email.toLowerCase().trim()},
-        select: ["id", "name", "lastName", "email", "password"],
-        relations: ["role"],
-      });
-    }
-
-    if (!user) {
-      user = await Admins.findOne({
-        where: { email: email.toLowerCase().trim() },
-        select: ["id", "name", "email", "password"],
-        relations: ["role"],
-      });
-    }
-    
-
-    if (!user || !verifyPassword(password, user.password)) {
-       res.status(401).json({ 
-        message: "Credenciales inválidas",
-        errorCode: "INVALID_CREDENTIALS"
-      });
-    }
-
-    let tokenPayload;
-    if (user instanceof Users) {
-      tokenPayload = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        lastName: user.lastName,
-        role: user.role.name,
-      };
-    } else if (user instanceof Owners) {
-      tokenPayload = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        lastName: user.lastName,
-        role: user.role.name,
-      };
-    } else if (user instanceof Admins) {
-      tokenPayload = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role.name,
-      };
-    } else {
-      res.status(500).json({ message: "Unknown user type" });
       return;
     }
 
-    const token = jwt.sign(tokenPayload, JWT_SECRET_KEY, {
-      expiresIn: "1d",
-    });
+    // Búsqueda segura de usuario
+    const user = await findUserByEmail(email);
+    if (!user || !verifyPassword(password, user.password)) {
+      res.status(401).json({
+        errorCode: "INVALID_CREDENTIALS",
+        message: "Credenciales inválidas"
+      });
+      return;
+    }
 
-    res.cookie(COOKIE_SECRET_KEY, token, {
-      httpOnly: true,
-      sameSite: "strict",
-      maxAge: 3600000 * 24,
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-    });
+    const { token, userResponse } = await generateAuthResponse(user);
 
-    const { password: userPassword, ...userResponse } = user;
+    setAuthCookie(res, token);
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: "Login exitoso",
       user: userResponse,
-      token 
+      token
     });
-  } catch (err) {
-    console.error("Error en login:", err);
-      res.status(500).json({ 
-      message: "Error interno del servidor",
-      errorCode: "SERVER_ERROR"
-    });
+    return;
+
+  } catch (error) {
+    next(error); 
   }
 };
+
+const findUserByEmail = async (email: string) => {
+  try {
+    const normalizedEmail = email.toLowerCase().trim();
+    
+    const user = await Users.findOne({
+      where: { email: normalizedEmail },
+      relations: ["role"],
+      select: ["id", "name", "lastName", "email", "password"]
+    });
+
+    return user || await Owners.findOne({
+      where: { email: normalizedEmail },
+      relations: ["role"],
+      select: ["id", "name", "lastName", "email", "password"]
+    }) || await Admins.findOne({
+      where: { email: normalizedEmail },
+      relations: ["role"],
+      select: ["id", "name", "email", "password"]
+    });
+  } catch (error) {
+    console.error("Error en búsqueda de usuario:", error);
+    return null;
+  }
+};
+
+const generateAuthResponse = async (user: Users | Owners | Admins) => {
+  const tokenPayload = {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    ...(user instanceof Users || user instanceof Owners ? { lastName: user.lastName } : {}),
+    role: user.role?.name || 
+          (user instanceof Users ? 'user' : 
+           user instanceof Owners ? 'owner' : 'admin')
+  };
+
+  const token = jwt.sign(tokenPayload, JWT_SECRET_KEY, { expiresIn: "1d" });
+  const { password, ...userResponse } = user;
+
+  return { token, userResponse };
+};
+
+const setAuthCookie = (res: Response, token: string) => {
+  res.cookie(COOKIE_SECRET_KEY, token, {
+    httpOnly: true,
+    sameSite: "strict",
+    maxAge: 3600000 * 24,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+};
+
+
+
+
+
 
 // Logout genérico
 export const logout: RequestHandler = (req, res) => {
