@@ -47,13 +47,43 @@ export const getLocals: RequestHandler = async (req, res) => {
   }
 };
 
+export const getLocalsByOwnerId: RequestHandler = async (req, res) => {
+  try {
+    const { ownerId } = req.params;
+
+    const locals = await Locals.find({
+      where: { ownerId: parseInt(ownerId) },
+      relations: ['address','address.city' ,'categoryLocal']
+    });
+
+    if (!locals || locals.length === 0) {
+      res.status(404).json({ message: "Locals not found for this owner" });
+    }
+
+    res.json(locals);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Unknown error occurred" });
+    }
+  }
+}
+
 // Obtener un local por ID
 export const getLocal: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const local = await Locals.findOneBy({ id: parseInt(id) });
-
+    const local = await Locals.findOne({
+      where: { id: parseInt(id) },
+      relations: [
+        'address',
+        'address.city', 
+        'categoryLocal'
+      ]
+    });
+    
     if (!local) {
       res.status(404).json({ message: "Local not found" });
     }

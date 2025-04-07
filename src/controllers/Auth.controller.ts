@@ -36,20 +36,13 @@ export const register: RequestHandler = async (req, res): Promise<void> => {
           password,
           cellphone,
           birthDate,
-          cityName,
+          cityId,
         } = req.body;
 
-        if (!cityName) {
-          res.status(400).json({ message: "City name is required" });
-        }
 
-        const city = await Cities.createQueryBuilder("city")
-          .where("LOWER(city.name) = LOWER(:name)", { name: cityName.trim() })
-          .getOne();
 
-        if (!city) {
-          res.status(400).json({ message: "City not found" });
-        }
+
+
         const emailExists = await Users.findOne({
           where: { email: email.toLowerCase().trim() },
         });
@@ -67,7 +60,7 @@ export const register: RequestHandler = async (req, res): Promise<void> => {
         user.password = hashPassword(password);
         user.cellphone = cellphone;
         user.birthDate = birthDate;
-        user.city = city as Cities;
+        user.cityId = cityId;
         user.roleId = roleId;
 
         await user.save();
@@ -372,15 +365,39 @@ export const checkAuth: RequestHandler = async (req, res) => {
     const token = req.cookies[COOKIE_SECRET_KEY];
 
     if (!token) {
-      res.status(401).json({ isAuthenticated: false });
+      res.status(200).json({ 
+        isAuthenticated: false,
+        message: "No autenticado - Token faltante"
+      });
+      return;
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET_KEY) as { id: number };
-    const isAuthenticated = !!decoded && typeof decoded.id === "number";
 
-    res.json({ isAuthenticated });
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET_KEY) as { id: number };
+      const isAuthenticated = !!decoded?.id;
+      
+      res.status(200).json({ 
+        isAuthenticated,
+        userId: decoded.id 
+      });
+      return;
+
+    } catch (jwtError) {
+      res.status(200).json({
+        isAuthenticated: false,
+        message: "Token inválido o expirado"
+      });
+      return;
+    }
+
   } catch (err) {
-    res.status(500).json({ isAuthenticated: false });
+    console.error("Error en checkAuth:", err);
+    res.status(200).json({
+      isAuthenticated: false,
+      message: "Error verificando autenticación"
+    });
+    return;
   }
 };
 

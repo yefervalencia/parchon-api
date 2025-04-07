@@ -14,6 +14,8 @@ export const createEvent: RequestHandler = async (req, res) => {
       categoryEventId,
     } = req.body;
 
+
+ 
     const event = new Events();
     event.name = name;
     event.description = description;
@@ -48,6 +50,63 @@ export const getEvents: RequestHandler = async (req, res) => {
     }
   }
 };
+
+// Obtener eventos por localId
+ export const getEventsByLocalId: RequestHandler = async (req, res) => {
+  try {
+    const { localId } = req.params;
+
+    const events = await Events.find({ where: { localId: parseInt(localId) } });
+
+    res.json(events);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Unknown error occurred" });
+    }
+  }
+};
+
+// Obtener eventos por ownerId
+export const getEventsByOwnerId: RequestHandler = async (req, res) => {
+  try {
+    const { ownerId } = req.params;
+
+    const numericOwnerId = Number(ownerId);
+    if (isNaN(numericOwnerId)) {
+      res.status(400).json({ message: "Formato de ID inválido" });
+    }
+
+    const events = await Events
+      .createQueryBuilder("event")
+      .innerJoinAndSelect(
+        "event.local", 
+        "local", 
+        "local.ownerId = :ownerId", 
+        { ownerId: numericOwnerId }
+      )
+      .leftJoinAndSelect("event.categoryEvent", "category") 
+      .addOrderBy("event.startDate", "ASC")
+      .getMany();
+
+    if (events.length === 0) {
+       res.status(404).json({ message: "No se encontraron eventos para este propietario" });
+    }
+
+    res.json(events);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Error en el servidor" });
+    }
+  }
+};
+
+
+
+
 
 // Obtener un evento por ID
 export const getEvent: RequestHandler = async (req, res) => {
