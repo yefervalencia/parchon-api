@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { Events } from "../entities/Events";
+import { ImagesEvents } from "../entities/ImagesEvents";
 
 // Crear un nuevo evento
 export const createEvent: RequestHandler = async (req, res) => {
@@ -105,6 +106,29 @@ export const deleteEvent: RequestHandler = async (req, res) => {
     }
 
     res.sendStatus(204);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Unknown error occurred" });
+    }
+  }
+};
+
+export const getEventImages: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const event = await Events.findOneBy({ id: parseInt(id) });
+    if (!event) {
+      res.status(404).json({ message: "event not found" });
+    }
+
+    const images = await ImagesEvents.find({
+      where: { eventId: parseInt(id) },
+    });
+
+    res.json(images);
   } catch (err) {
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });

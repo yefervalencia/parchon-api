@@ -51,10 +51,10 @@ app.use("/api/v1", router);
 
 router.use("/addresses", addressRoutes);
 router.use("/admins", adminRouter);
-router.use("/event/categories", categoryEventRoutes);
-router.use("/local/categories", categoryLocalRoutes);
-router.use("/place/categories", categoryPlaceRoutes);
-router.use("/service/categories", categoryServiceRoutes);
+router.use("/categoriesEvents", categoryEventRoutes);
+router.use("/categoriesLocals", categoryLocalRoutes);
+router.use("/categoriesPlaces", categoryPlaceRoutes);
+router.use("/categoriesServices", categoryServiceRoutes);
 router.use("/cities", cityRouter);
 router.use("/departments", departmentRoutes);
 router.use("/events", eventRoutes);

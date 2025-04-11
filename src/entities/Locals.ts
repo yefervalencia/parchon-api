@@ -57,8 +57,8 @@ export class Locals extends BaseEntity{
   @OneToMany(() => Events, (events) => events.local)
   events: Events[];
 
-  @OneToMany(() => Events, (events) => events.local_2)
-  events2: Events[];
+  //@OneToMany(() => Events, (events) => events.local_2)
+  //events2: Events[];
 
   @OneToMany(() => ImagesLocals, (imagesLocals) => imagesLocals.local)
   imagesLocals: ImagesLocals[];
