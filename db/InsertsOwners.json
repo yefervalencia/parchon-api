@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Carlos",
+    "lastName": "Ramírez",
+    "cellphone": "3101234567",
+    "identification": "1234567890",
+    "email": "carlos.ramirez@parchon.com",
+    "password": "Carlos@1234",
+    "roleId": 2
+  },
+  {
+    "name": "Maria",
+    "lastName": "Gómez",
+    "cellphone": "3112345678",
+    "identification": "2345678901",
+    "email": "maria.gomez@parchon.com",
+    "password": "Maria@1234",
+    "roleId": 2
+  },
+  {
+    "name": "Juan",
+    "lastName": "Pérez",
+    "cellphone": "3123456789",
+    "identification": "3456789012",
+    "email": "juan.perez@parchon.com",
+    "password": "Juan@1234",
+    "roleId": 2
+  },
+  {
+    "name": "Ana",
+    "lastName": "López",
+    "cellphone": "3134567890",
+    "identification": "4567890123",
+    "email": "ana.lopez@parchon.com",
+    "password": "Ana@1234",
+    "roleId": 2
+  },
+  {
+    "name": "Pedro",
+    "lastName": "Martínez",
+    "cellphone": "3145678901",
+    "identification": "5678901234",
+    "email": "pedro.martinez@parchon.com",
+    "password": "Pedro@1234",
+    "roleId": 2
+  }
+]
