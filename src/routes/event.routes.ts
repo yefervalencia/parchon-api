@@ -14,7 +14,7 @@ const eventRoutes = Router();
 eventRoutes.post("/", createEvent);
 eventRoutes.get("/", getEvents);
 eventRoutes.get("/:id", getEvent);
-eventRoutes.get("/owner/:id",getEventsByOwnerId)
+eventRoutes.get("/owner/:ownerId",getEventsByOwnerId)
 eventRoutes.put("/:id", updateEvent);
 eventRoutes.delete("/:id", deleteEvent);
 eventRoutes.get("/:id/images", getEventImages);
