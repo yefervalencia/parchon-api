@@ -199,7 +199,7 @@ INSERT INTO categories_locals (name, description) VALUES
 ('Gourmet', 'Restaurantes de alta cocina y experiencia gastronómica');
 
 INSERT INTO locals (name, description, cellphone, address_id, owner_id, category_local_id) VALUES
-('La Cocina de Mamá', 'Restaurante de comida tradicional colombiana', '7528861234', 1, 6, 1),
+('La Cocina de Mamá', 'Restaurante de comida tradicional colombiana', '7528861234', 1, 1, 1),
 ('Café del Centro', 'Acogedora cafetería en el corazón de Manizales', '8845662345', 5, 2, 2),
 ('Bar La 23', 'Bar temático con música en vivo los fines de semana', '8867864345', 10, 3, 3),
 ('Pizza Nostra', 'Auténtica pizza italiana en Manizales', '8864567527', 15, 4, 8),
@@ -399,27 +399,27 @@ INSERT INTO events (name, description, capacity, start_date, end_date, local_id,
 
 -- Carreras (5)
 INSERT INTO events (name, description, capacity, start_date, end_date, local_id, category_event_id) VALUES
-('Media Maratón de Manizales', 'Carrera atlética 21K', 1000, '2023-11-19 06:00:00', '2023-11-19 12:00:00', NULL, 3),
-('Carrera de la Montaña', 'Trail running por senderos naturales', 500, '2023-12-03 07:00:00', '2023-12-03 14:00:00', NULL, 3),
-('5K por la Salud', 'Carrera familiar para promover hábitos saludables', 800, '2023-11-26 08:00:00', '2023-11-26 11:00:00', NULL, 3),
-('Carrera de Observación', 'Prueba de orientación urbana', 200, '2023-12-09 09:00:00', '2023-12-09 16:00:00', NULL, 3),
-('Duatlón Ciudad de Manizales', 'Competencia de ciclismo y carrera', 300, '2023-12-17 07:30:00', '2023-12-17 15:00:00', NULL, 3);
+('Media Maratón de Manizales', 'Carrera atlética 21K', 1000, '2023-11-19 06:00:00', '2023-11-19 12:00:00', 1, 3),
+('Carrera de la Montaña', 'Trail running por senderos naturales', 500, '2023-12-03 07:00:00', '2023-12-03 14:00:00', 3, 3),
+('5K por la Salud', 'Carrera familiar para promover hábitos saludables', 800, '2023-11-26 08:00:00', '2023-11-26 11:00:00', 5, 3),
+('Carrera de Observación', 'Prueba de orientación urbana', 200, '2023-12-09 09:00:00', '2023-12-09 16:00:00', 2, 3),
+('Duatlón Ciudad de Manizales', 'Competencia de ciclismo y carrera', 300, '2023-12-17 07:30:00', '2023-12-17 15:00:00', 1, 3);
 
 -- Ferias (5)
 INSERT INTO events (name, description, capacity, start_date, end_date, local_id, category_event_id) VALUES
-('Feria de Manizales', 'Evento tradicional de la ciudad', 5000, '2024-01-05 10:00:00', '2024-01-12 22:00:00', NULL, 4),
-('Feria del Libro', 'Evento literario con autores nacionales', 1000, '2023-11-22 09:00:00', '2023-11-26 20:00:00', NULL, 4),
-('Expoartesanías', 'Feria de artesanías colombianas', 800, '2023-12-07 10:00:00', '2023-12-10 20:00:00', NULL, 4),
-('Feria Gastronómica', 'Muestra de cocina regional', 600, '2023-11-30 11:00:00', '2023-12-03 21:00:00', NULL, 4),
-('Feria de Emprendimiento', 'Exposición de proyectos innovadores', 400, '2023-12-14 09:00:00', '2023-12-16 19:00:00', NULL, 4);
+('Feria de Manizales', 'Evento tradicional de la ciudad', 5000, '2024-01-05 10:00:00', '2024-01-12 22:00:00', 2, 4),
+('Feria del Libro', 'Evento literario con autores nacionales', 1000, '2023-11-22 09:00:00', '2023-11-26 20:00:00', 2, 4),
+('Expoartesanías', 'Feria de artesanías colombianas', 800, '2023-12-07 10:00:00', '2023-12-10 20:00:00', 1, 4),
+('Feria Gastronómica', 'Muestra de cocina regional', 600, '2023-11-30 11:00:00', '2023-12-03 21:00:00', 3, 4),
+('Feria de Emprendimiento', 'Exposición de proyectos innovadores', 400, '2023-12-14 09:00:00', '2023-12-16 19:00:00', 1, 4);
 
 -- Exposiciones (5)
 INSERT INTO events (name, description, capacity, start_date, end_date, local_id, category_event_id) VALUES
-('Arte Contemporáneo', 'Exposición de artistas emergentes', 200, '2023-11-18 10:00:00', '2023-12-18 18:00:00', NULL, 5),
-('Fotografía de Montaña', 'Exposición de paisajes andinos', 150, '2023-11-25 09:00:00', '2023-12-10 19:00:00', NULL, 5),
-('Historia de Manizales', 'Exposición sobre la fundación de la ciudad', 100, '2023-12-05 08:00:00', '2024-01-05 17:00:00', NULL, 5),
-('Biodiversidad Andina', 'Exposición sobre flora y fauna local', 120, '2023-12-12 10:00:00', '2024-01-12 18:00:00', NULL, 5),
-('Arte en Café', 'Obras artísticas realizadas con café', 180, '2023-12-20 09:00:00', '2024-01-20 19:00:00', NULL, 5);
+('Arte Contemporáneo', 'Exposición de artistas emergentes', 200, '2023-11-18 10:00:00', '2023-12-18 18:00:00', 5, 5),
+('Fotografía de Montaña', 'Exposición de paisajes andinos', 150, '2023-11-25 09:00:00', '2023-12-10 19:00:00', 1, 5),
+('Historia de Manizales', 'Exposición sobre la fundación de la ciudad', 100, '2023-12-05 08:00:00', '2024-01-05 17:00:00', 3, 5),
+('Biodiversidad Andina', 'Exposición sobre flora y fauna local', 120, '2023-12-12 10:00:00', '2024-01-12 18:00:00', 2, 5),
+('Arte en Café', 'Obras artísticas realizadas con café', 180, '2023-12-20 09:00:00', '2024-01-20 19:00:00', 1, 5);
 
 -- Talleres (5)
 INSERT INTO events (name, description, capacity, start_date, end_date, local_id, category_event_id) VALUES
@@ -431,32 +431,32 @@ INSERT INTO events (name, description, capacity, start_date, end_date, local_id,
 
 -- Conferencias (5)
 INSERT INTO events (name, description, capacity, start_date, end_date, local_id, category_event_id) VALUES
-('Innovación Tecnológica', 'Charla sobre tendencias en tecnología', 100, '2023-11-22 16:00:00', '2023-11-22 19:00:00', NULL, 7),
-('Sostenibilidad Ambiental', 'Conferencia sobre prácticas sostenibles', 80, '2023-11-29 17:00:00', '2023-11-29 20:00:00', NULL, 7),
-('Emprendimiento Social', 'Experiencias de emprendedores sociales', 60, '2023-12-07 15:00:00', '2023-12-07 18:00:00', NULL, 7),
-('Historia del Café', 'Conferencia sobre la cultura cafetera', 120, '2023-12-14 14:00:00', '2023-12-14 17:00:00', NULL, 7),
-('Arquitectura Colombiana', 'Charla sobre arquitectura contemporánea', 90, '2023-12-21 16:00:00', '2023-12-21 19:00:00', NULL, 7);
+('Innovación Tecnológica', 'Charla sobre tendencias en tecnología', 100, '2023-11-22 16:00:00', '2023-11-22 19:00:00', 2, 7),
+('Sostenibilidad Ambiental', 'Conferencia sobre prácticas sostenibles', 80, '2023-11-29 17:00:00', '2023-11-29 20:00:00', 3, 7),
+('Emprendimiento Social', 'Experiencias de emprendedores sociales', 60, '2023-12-07 15:00:00', '2023-12-07 18:00:00', 2, 7),
+('Historia del Café', 'Conferencia sobre la cultura cafetera', 120, '2023-12-14 14:00:00', '2023-12-14 17:00:00', 5, 7),
+('Arquitectura Colombiana', 'Charla sobre arquitectura contemporánea', 90, '2023-12-21 16:00:00', '2023-12-21 19:00:00', 1, 7);
 
 -- Festivales (5)
 INSERT INTO events (name, description, capacity, start_date, end_date, local_id, category_event_id) VALUES
-('Festival de Teatro', 'Presentación de obras teatrales', 300, '2023-11-23 10:00:00', '2023-11-26 22:00:00', NULL, 8),
-('Festival de Cine', 'Proyección de películas independientes', 200, '2023-11-30 14:00:00', '2023-12-03 22:00:00', NULL, 8),
-('Festival de la Luna', 'Celebración cultural nocturna', 400, '2023-12-08 18:00:00', '2023-12-10 23:00:00', NULL, 8),
-('Festival de Danza', 'Presentación de grupos de danza', 250, '2023-12-15 15:00:00', '2023-12-17 21:00:00', NULL, 8),
-('Festival de la Luz', 'Espectáculo de luces y proyecciones', 500, '2023-12-22 19:00:00', '2023-12-24 23:00:00', NULL, 8);
+('Festival de Teatro', 'Presentación de obras teatrales', 300, '2023-11-23 10:00:00', '2023-11-26 22:00:00', 2, 8),
+('Festival de Cine', 'Proyección de películas independientes', 200, '2023-11-30 14:00:00', '2023-12-03 22:00:00', 4, 8),
+('Festival de la Luna', 'Celebración cultural nocturna', 400, '2023-12-08 18:00:00', '2023-12-10 23:00:00', 5, 8),
+('Festival de Danza', 'Presentación de grupos de danza', 250, '2023-12-15 15:00:00', '2023-12-17 21:00:00', 1, 8),
+('Festival de la Luz', 'Espectáculo de luces y proyecciones', 500, '2023-12-22 19:00:00', '2023-12-24 23:00:00', 2, 8);
 
 -- Deportes (5)
 INSERT INTO events (name, description, capacity, start_date, end_date, local_id, category_event_id) VALUES
-('Torneo de Fútbol', 'Competencia local de fútbol amateur', 200, '2023-11-24 08:00:00', '2023-11-26 18:00:00', NULL, 9),
-('Clínica de Ciclismo', 'Taller práctico de ciclismo de montaña', 50, '2023-12-01 07:00:00', '2023-12-01 12:00:00', NULL, 9),
-('Torneo de Ajedrez', 'Competencia abierta de ajedrez', 40, '2023-12-09 09:00:00', '2023-12-09 17:00:00', NULL, 9),
-('Yoga en el Parque', 'Sesión masiva de yoga al aire libre', 150, '2023-12-16 07:00:00', '2023-12-16 09:00:00', NULL, 9),
-('Escalada Deportiva', 'Taller y demostración de escalada', 30, '2023-12-23 08:00:00', '2023-12-23 14:00:00', NULL, 9);
+('Torneo de Fútbol', 'Competencia local de fútbol amateur', 200, '2023-11-24 08:00:00', '2023-11-26 18:00:00', 2, 9),
+('Clínica de Ciclismo', 'Taller práctico de ciclismo de montaña', 50, '2023-12-01 07:00:00', '2023-12-01 12:00:00', 3, 9),
+('Torneo de Ajedrez', 'Competencia abierta de ajedrez', 40, '2023-12-09 09:00:00', '2023-12-09 17:00:00', 4, 9),
+('Yoga en el Parque', 'Sesión masiva de yoga al aire libre', 150, '2023-12-16 07:00:00', '2023-12-16 09:00:00', 1, 9),
+('Escalada Deportiva', 'Taller y demostración de escalada', 30, '2023-12-23 08:00:00', '2023-12-23 14:00:00', 2, 9);
 
 -- Culturales (5)
 INSERT INTO events (name, description, capacity, start_date, end_date, local_id, category_event_id) VALUES
-('Noche de Museos', 'Apertura nocturna de museos de la ciudad', 300, '2023-11-27 18:00:00', '2023-11-27 23:00:00', NULL, 10),
-('Recorrido Histórico', 'Tour guiado por sitios históricos', 25, '2023-12-02 10:00:00', '2023-12-02 13:00:00', NULL, 10),
-('Presentación de Libro', 'Lanzamiento de libro local', 80, '2023-12-11 17:00:00', '2023-12-11 19:00:00', NULL, 10),
-('Poesía al Parque', 'Lectura de poesía al aire libre', 60, '2023-12-18 16:00:00', '2023-12-18 18:00:00', NULL, 10),
-('Mercado Campesino', 'Feria de productos agrícolas locales', 200, '2023-12-24 08:00:00', '2023-12-24 14:00:00', NULL, 10);
+('Noche de Museos', 'Apertura nocturna de museos de la ciudad', 300, '2023-11-27 18:00:00', '2023-11-27 23:00:00', 4, 10),
+('Recorrido Histórico', 'Tour guiado por sitios históricos', 25, '2023-12-02 10:00:00', '2023-12-02 13:00:00', 2, 10),
+('Presentación de Libro', 'Lanzamiento de libro local', 80, '2023-12-11 17:00:00', '2023-12-11 19:00:00', 3, 10),
+('Poesía al Parque', 'Lectura de poesía al aire libre', 60, '2023-12-18 16:00:00', '2023-12-18 18:00:00', 2, 10),
+('Mercado Campesino', 'Feria de productos agrícolas locales', 200, '2023-12-24 08:00:00', '2023-12-24 14:00:00', 1, 10);

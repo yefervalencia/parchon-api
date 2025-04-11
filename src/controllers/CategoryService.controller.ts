@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { CategoriesServices } from "../entities/CategoriesServices";
-
+import { Services } from "../entities/Services";
 // Crear una nueva categoría de servicio
 export const createCategoryService: RequestHandler = async (req, res) => {
   try {
@@ -91,6 +91,29 @@ export const deleteCategoryService: RequestHandler = async (req, res) => {
     }
 
     res.sendStatus(204);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Unknown error occurred" });
+    }
+  }
+};
+
+export const getServicesByCategory: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const category = await CategoriesServices.findOneBy({ id: parseInt(id) });
+    if (!category) {
+      res.status(404).json({ message: "category not found" });
+    }
+
+    const services = await Services.find({
+      where: { categoryServiceId: parseInt(id) },
+    });
+
+    res.json(services);
   } catch (err) {
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });
