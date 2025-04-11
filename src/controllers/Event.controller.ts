@@ -14,8 +14,6 @@ export const createEvent: RequestHandler = async (req, res) => {
       categoryEventId,
     } = req.body;
 
-
- 
     const event = new Events();
     event.name = name;
     event.description = description;
@@ -52,7 +50,7 @@ export const getEvents: RequestHandler = async (req, res) => {
 };
 
 // Obtener eventos por localId
- export const getEventsByLocalId: RequestHandler = async (req, res) => {
+export const getEventsByLocalId: RequestHandler = async (req, res) => {
   try {
     const { localId } = req.params;
 
@@ -69,51 +67,72 @@ export const getEvents: RequestHandler = async (req, res) => {
 };
 
 // Obtener eventos por ownerId
-export const getEventsByOwnerId: RequestHandler = async (req, res) => {
+export const getEventsByOwnerId: RequestHandler = async (req, res): Promise<void> => {
   try {
     const { ownerId } = req.params;
+    const numericOwnerId = parseInt(ownerId, 10);
 
-    const numericOwnerId = Number(ownerId);
+    // Validar que ownerId sea un número válido
     if (isNaN(numericOwnerId)) {
-      res.status(400).json({ message: "Formato de ID inválido" });
+      res.status(400).json({ message: 'ownerId inválido' });
+      return;
     }
 
-    const events = await Events
-      .createQueryBuilder("event")
-      .innerJoinAndSelect(
-        "event.local", 
-        "local", 
-        "local.ownerId = :ownerId", 
-        { ownerId: numericOwnerId }
-      )
-      .leftJoinAndSelect("event.categoryEvent", "category") 
+    const events = await Events.createQueryBuilder("event")
+      .innerJoinAndSelect("event.local", "local", "local.ownerId = :ownerId", { ownerId: numericOwnerId })
+      .leftJoinAndSelect("event.categoryEvent", "category")
       .addOrderBy("event.startDate", "ASC")
       .getMany();
 
-    if (events.length === 0) {
-       res.status(404).json({ message: "No se encontraron eventos para este propietario" });
+    // Si no se encuentran eventos, se envía el error y se detiene la ejecución
+    if (!events || events.length === 0) {
+      res.status(404).json({ message: "No se encontraron eventos para este propietario" });
+      return;
     }
 
     res.json(events);
+    return;
   } catch (err) {
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });
-    } else {
-      res.status(500).json({ message: "Error en el servidor" });
+      return;
     }
+    res.status(500).json({ message: "Error en el servidor" });
   }
 };
-
-
-
-
 
 // Obtener un evento por ID
 export const getEvent: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const event = await Events.findOneBy({ id: parseInt(id) });
+    //const event = await Events.findOneBy({ id: parseInt(id) });
+    const event = await Events.findOne({
+      where: { id: parseInt(id) },
+      relations: ["local", "categoryEvent", "local.address"],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        capacity: true,
+        startDate: true,
+        endDate: true,
+        local: {
+          id: true,
+          name: true,
+          cellphone: true,
+          ownerId: true,
+          address: {
+            id: true,
+            street: true,
+          } as any,
+        } as any,
+        categoryEvent: {
+          id: true,
+          name: true,
+        } as any,
+      },
+    });
 
     if (!event) {
       res.status(404).json({ message: "Event not found" });

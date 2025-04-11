@@ -5,7 +5,6 @@ import { Admins } from "../entities/Admins";
 import { Owners } from "../entities/Owners";
 import { Users } from "../entities/Users";
 import { Roles } from "../entities/Roles";
-import { Cities } from "../entities/Cities";
 import { hashPassword, verifyPassword } from "../utils/encryption";
 import TokenUtils from "../utils/token";
 
@@ -86,11 +85,13 @@ export const register: RequestHandler = async (req, res): Promise<void> => {
         } = req.body;
 
         const emailExistsOwner = await Owners.findOne({
-          where: { email: email.toLowerCase().trim() },
+          where: { email: ownerEmail.toLowerCase().trim() },
         });
         if (emailExistsOwner) {
           res.status(400).json({ message: "El email ya está registrado" });
+          return; // Agrega el return aquí para detener la ejecución
         }
+        
         const owner = new Owners();
         owner.name = ownerName;
         owner.lastName = ownerLastName;
@@ -416,5 +417,150 @@ export const getCurrentRole: RequestHandler = async (req, res) => {
       res.status(500).json({ message: err.message });
     }
     res.status(500).json({ message: "Unknown error occurred" });
+  }
+};
+
+
+export const updateProfile: RequestHandler = async (req, res) => {
+  try {
+    // Extraer el ID del usuario y su rol a partir del token
+    const userId = TokenUtils.getUserIdFromRequest(req);
+    const role = TokenUtils.getRoleFromRequest(req);
+
+    if (!userId || !role) {
+      res.status(401).json({ 
+        message: "No autorizado - Token inválido o faltante", 
+        errorCode: "INVALID_TOKEN" 
+      });
+      return;
+    }
+
+    let user;
+
+    switch (role.toLowerCase()) {
+      case "user": {
+        user = await Users.findOne({ where: { id: userId } });
+        if (!user) {
+          res.status(404).json({
+            message: "Usuario no encontrado",
+            errorCode: "USER_NOT_FOUND",
+          });
+          return;
+        }
+
+        // Extraer campos enviados en el body (excluyendo contraseña)
+        const { name, lastName, cellphone, birthDate, cityId, email } = req.body;
+        
+        if (name) user.name = name;
+        if (lastName) user.lastName = lastName;
+        if (cellphone) user.cellphone = cellphone;
+        if (birthDate) user.birthDate = birthDate;
+        if (cityId) user.cityId = cityId;
+        if (email && email.toLowerCase().trim() !== user.email.toLowerCase().trim()) {
+          // Validar que el nuevo email no esté registrado
+          const emailExists = await Users.findOne({
+            where: { email: email.toLowerCase().trim() },
+          });
+          if (emailExists) {
+            res.status(400).json({
+              message: "El email ya está registrado",
+              errorCode: "EMAIL_ALREADY_EXISTS",
+            });
+            return;
+          }
+          user.email = email;
+        }
+
+        await user.save();
+        res.status(200).json({ message: "Perfil actualizado exitosamente", user });
+        break;
+      }
+      case "owner": {
+        user = await Owners.findOne({ where: { id: userId } });
+        if (!user) {
+          res.status(404).json({
+            message: "Usuario no encontrado",
+            errorCode: "USER_NOT_FOUND",
+          });
+          return;
+        }
+
+        // Extraer campos enviados en el body (excluyendo contraseña)
+        const {
+          name: ownerName,
+          lastName: ownerLastName,
+          cellphone: ownerCellphone,
+          identification,
+          email: ownerEmail,
+        } = req.body;
+        
+        if (ownerName) user.name = ownerName;
+        if (ownerLastName) user.lastName = ownerLastName;
+        if (ownerCellphone) user.cellphone = ownerCellphone;
+        if (identification) user.identification = identification;
+        if (ownerEmail && ownerEmail.toLowerCase().trim() !== user.email.toLowerCase().trim()) {
+          const emailExists = await Owners.findOne({
+            where: { email: ownerEmail.toLowerCase().trim() },
+          });
+          if (emailExists) {
+            res.status(400).json({
+              message: "El email ya está registrado",
+              errorCode: "EMAIL_ALREADY_EXISTS",
+            });
+            return;
+          }
+          user.email = ownerEmail;
+        }
+
+        await user.save();
+        res.status(200).json({ message: "Perfil actualizado exitosamente", user });
+        break;
+      }
+      case "admin": {
+        user = await Admins.findOne({ where: { id: userId } });
+        if (!user) {
+          res.status(404).json({
+            message: "Usuario no encontrado",
+            errorCode: "USER_NOT_FOUND",
+          });
+          return;
+        }
+
+        // Extraer campos enviados en el body (excluyendo contraseña)
+        const { name: adminName, email: adminEmail } = req.body;
+        
+        if (adminName) user.name = adminName;
+        if (adminEmail && adminEmail.toLowerCase().trim() !== user.email.toLowerCase().trim()) {
+          const emailExists = await Admins.findOne({
+            where: { email: adminEmail.toLowerCase().trim() },
+          });
+          if (emailExists) {
+            res.status(400).json({
+              message: "El email ya está registrado",
+              errorCode: "EMAIL_ALREADY_EXISTS",
+            });
+            return;
+          }
+          user.email = adminEmail;
+        }
+
+        await user.save();
+        res.status(200).json({ message: "Perfil actualizado exitosamente", user });
+        break;
+      }
+      default: {
+        res.status(400).json({ 
+          message: "Tipo de rol inválido", 
+          errorCode: "INVALID_ROLE" 
+        });
+        return;
+      }
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Unknown error occurred" });
+    }
   }
 };

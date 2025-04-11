@@ -6,6 +6,7 @@ import {
   getCurrentUser,
   checkAuth,
   getCurrentRole,
+  updateProfile,
 } from "../controllers/Auth.controller";
 
 const authRouter = Router();
@@ -17,5 +18,7 @@ authRouter.post("/logout", logout);
 authRouter.get("/me", getCurrentUser);
 authRouter.get("/check-auth", checkAuth);
 authRouter.get("/role", getCurrentRole);
+authRouter.put("/profile", updateProfile);
+
 
 export default authRouter;
