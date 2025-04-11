@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import { Events } from "../entities/Events";
 import { CategoriesEvents } from "../entities/CategoriesEvents";
 
 // Crear una nueva categoría de evento
@@ -91,6 +92,29 @@ export const deleteCategoryEvent: RequestHandler = async (req, res) => {
     }
 
     res.sendStatus(204);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Unknown error occurred" });
+    }
+  }
+};
+
+export const getEventsByCategory: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const category = await CategoriesEvents.findOneBy({ id: parseInt(id) });
+    if (!category) {
+      res.status(404).json({ message: "category not found" });
+    }
+
+    const events = await Events.find({
+      where: { categoryEventId: parseInt(id) },
+    });
+
+    res.json(events);
   } catch (err) {
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });
