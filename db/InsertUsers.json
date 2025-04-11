@@ -1,0 +1,102 @@
+[
+  {
+    "name": "Laura",
+    "lastName": "Garcia",
+    "email": "laura.garcia@example.com",
+    "cellphone": "3156789012",
+    "password": "Laura@1234",
+    "birthDate": "1995-05-15",
+    "citId": 337,
+    "roleId": 1
+  },
+  {
+    "name": "Andres",
+    "lastName": "Rodríguez",
+    "email": "andres.rodriguez@example.com",
+    "cellphone": "3167890123",
+    "password": "Andres@1234",
+    "birthDate": "1990-08-20",
+    "citId": 337,
+    "roleId": 1
+  },
+  {
+    "name": "Sofia",
+    "lastName": "Hernández",
+    "email": "sofia.hernandez@example.com",
+    "cellphone": "3178901234",
+    "password": "Sofia@1234",
+    "birthDate": "1998-03-10",
+    "citId": 337,
+    "roleId": 1
+  },
+  {
+    "name": "Diego",
+    "lastName": "Diaz",
+    "email": "diego.diaz@example.com",
+    "cellphone": "3189012345",
+    "password": "Diego@1234",
+    "birthDate": "1993-11-25",
+    "citId": 337,
+    "roleId": 1
+  },
+  {
+    "name": "Camila",
+    "lastName": "Moreno",
+    "email": "camila.moreno@example.com",
+    "cellphone": "3190123456",
+    "password": "Camila@1234",
+    "birthDate": "1997-07-18",
+    "citId": 337,
+    "roleId": 1
+  },
+  {
+    "name": "Javier",
+    "lastName": "Suárez",
+    "email": "javier.suarez@example.com",
+    "cellphone": "3201234567",
+    "password": "Javier@1234",
+    "birthDate": "1994-09-30",
+    "citId": 337,
+    "roleId": 1
+  },
+  {
+    "name": "Valentina",
+    "lastName": "González",
+    "email": "valentina.gonzalez@example.com",
+    "cellphone": "3212345678",
+    "password": "Valentina@1234",
+    "birthDate": "1996-02-14",
+    "citId": 337,
+    "roleId": 1
+  },
+  {
+    "name": "Mateo",
+    "lastName": "Torres",
+    "email": "mateo.torres@example.com",
+    "cellphone": "3223456789",
+    "password": "Mateo@1234",
+    "birthDate": "1992-12-05",
+    "citId": 337,
+    "roleId": 1
+  },
+  {
+    "name": "Isabella",
+    "lastName": "Vargas",
+    "email": "isabella.vargas@example.com",
+    "cellphone": "3234567890",
+    "password": "Isabella@1234",
+    "birthDate": "1999-04-22",
+    "citId": 337,
+    "roleId": 1
+  },
+  {
+    "name": "Samuel",
+    "lastName": "Rojas",
+    "email": "samuel.rojas@example.com",
+    "cellphone": "3245678901",
+    "password": "Samuel@1234",
+    "birthDate": "1991-10-08",
+    "citId": 337,
+    "roleId": 1
+  }
+]

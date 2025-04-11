@@ -24,10 +24,11 @@ import imageEventRouter from "./routes/imageEvent.routes";
 import imageLocalRouter from "./routes/imageLocal.routes";
 import imagePlaceRouter from "./routes/imagePlace.routes";
 import imageServiceRouter from "./routes/imageService.routes";
+import { ImagesLocals } from "./entities/ImagesLocals";
 import authRouter from "./routes/auth.routes";
+import { errorHandler } from "./middlewares/errorHandler";
 
 import { FRONT_URL } from "./config";
-import { ImagesLocals } from "./entities/ImagesLocals";
 
 const app = express();
 const router = express.Router();
@@ -46,15 +47,16 @@ app.options("*", cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(errorHandler);
 
 app.use("/api/v1", router);
 
 router.use("/addresses", addressRoutes);
 router.use("/admins", adminRouter);
-router.use("/event/categories", categoryEventRoutes);
-router.use("/local/categories", categoryLocalRoutes);
-router.use("/place/categories", categoryPlaceRoutes);
-router.use("/service/categories", categoryServiceRoutes);
+router.use("/categoriesEvents", categoryEventRoutes);
+router.use("/categoriesLocals", categoryLocalRoutes);
+router.use("/categoriesPlaces", categoryPlaceRoutes);
+router.use("/categoriesServices", categoryServiceRoutes);
 router.use("/cities", cityRouter);
 router.use("/departments", departmentRoutes);
 router.use("/events", eventRoutes);
