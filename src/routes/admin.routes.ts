@@ -16,11 +16,11 @@ import { roleMiddleware } from "../middlewares/roleMiddleware";
 
 const adminRoutes = Router();
 
-adminRoutes.post("/", authMiddleware, roleMiddleware(["SuperAdmin"]), createAdmin);
+adminRoutes.post("/", authMiddleware, roleMiddleware(["SuperAdmin","Admin"]), createAdmin);
 adminRoutes.get("/", authMiddleware, roleMiddleware(["SuperAdmin", "Admin"]), getAdmins);
 adminRoutes.get("/:id", authMiddleware, getAdmin);
 adminRoutes.put("/:id", authMiddleware, roleMiddleware(["SuperAdmin", "Admin"]), updateAdmin);
-adminRoutes.delete("/:id", authMiddleware, roleMiddleware(["SuperAdmin"]), deleteAdmin);
+adminRoutes.delete("/:id", authMiddleware, roleMiddleware(["SuperAdmin","Admin"]), deleteAdmin);
 adminRoutes.get("/cookie", getCookieExists)
 adminRoutes.post("/cookie", getAdminByCookie)
 adminRoutes.get("/role", getRoleByCookie)

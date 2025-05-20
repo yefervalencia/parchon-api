@@ -21,6 +21,8 @@ import { RolePermission } from "./entities/RolePermission";
 import { Roles } from "./entities/Roles";
 import { Services } from "./entities/Services";
 import { Users } from "./entities/Users";
+import { PushToken } from "./entities/PushToken";
+ 
 
 import dotenv from "dotenv";
 
@@ -57,7 +59,8 @@ export const AppDataSource = new DataSource({
     RolePermission,
     Roles,
     Services,
-    Users
+    Users,
+    PushToken
   ],
   logging: ["error", "warn"],
   synchronize: false,

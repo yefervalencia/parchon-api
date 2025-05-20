@@ -564,3 +564,87 @@ export const updateProfile: RequestHandler = async (req, res) => {
     }
   }
 };
+
+
+
+export const changePassword: RequestHandler = async (req, res) => {
+  try {
+    const userId = TokenUtils.getUserIdFromRequest(req);
+    const role = TokenUtils.getRoleFromRequest(req);
+
+    if (!userId || !role) {
+      res.status(401).json({
+        message: "Unauthorized - Invalid or missing token",
+        errorCode: "INVALID_TOKEN"
+      });
+      return;
+    }
+
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      res.status(400).json({
+        message: "All fields are required",
+        errorCode: "MISSING_FIELDS"
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      res.status(400).json({
+        message: "New password and confirmation do not match",
+        errorCode: "PASSWORD_MISMATCH"
+      });
+      return;
+    }
+
+    let user;
+
+    switch (role.toLowerCase()) {
+      case "user":
+        user = await Users.findOne({ where: { id: userId } });
+        break;
+      case "owner":
+        user = await Owners.findOne({ where: { id: userId } });
+        break;
+      case "admin":
+        user = await Admins.findOne({ where: { id: userId } });
+        break;
+      default:
+        res.status(400).json({ message: "Invalid role", errorCode: "INVALID_ROLE" });
+        return;
+    }
+
+    if (!user) {
+      res.status(404).json({
+        message: "User not found",
+        errorCode: "USER_NOT_FOUND"
+      });
+      return;
+    }
+
+    const isPasswordValid = verifyPassword(currentPassword, user.password);
+
+    if (!isPasswordValid) {
+      res.status(401).json({
+        message: "Current password is incorrect",
+        errorCode: "INVALID_CURRENT_PASSWORD"
+      });
+      return;
+    }
+
+    user.password = hashPassword(newPassword);
+    await user.save();
+
+    res.status(200).json({
+      message: "Password changed successfully"
+    });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({
+      message: "Internal server error",
+      errorCode: "SERVER_ERROR"
+    });
+  }
+};
+

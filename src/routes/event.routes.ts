@@ -7,12 +7,14 @@ import {
   deleteEvent,
   getEventsByOwnerId,
   getEventImages,
+  getEventsAdmin,
 } from "../controllers/Event.controller";
 
 const eventRoutes = Router();
 
 eventRoutes.post("/", createEvent);
 eventRoutes.get("/", getEvents);
+eventRoutes.get("/admins", getEventsAdmin);
 eventRoutes.get("/:id", getEvent);
 eventRoutes.get("/owner/:ownerId",getEventsByOwnerId)
 eventRoutes.put("/:id", updateEvent);
