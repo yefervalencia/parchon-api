@@ -135,8 +135,10 @@ export const getEventsByOwnerId: RequestHandler = async (req, res): Promise<void
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });
       return;
+    }else {
+      res.status(500).json({ message: "Error en el servidor" });
     }
-    res.status(500).json({ message: "Error en el servidor" });
+    
   }
 };
 
