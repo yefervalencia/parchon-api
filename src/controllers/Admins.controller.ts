@@ -14,6 +14,7 @@ export const createAdmin: RequestHandler = async (req, res) => {
 
     // Buscar el rol por su ID
     const role = await Roles.findOneBy({ id: roleId });
+    
 
     const admin = new Admins();
 

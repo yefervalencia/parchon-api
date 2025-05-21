@@ -50,6 +50,44 @@ export const getEvents: RequestHandler = async (req, res) => {
   }
 };
 
+export const getEventsAdmin: RequestHandler = async (req, res) => {
+  try {
+    const events = await Events.find({
+      relations: [
+        "local",
+        "local.address",
+        "categoryEvent",
+      ],
+    });
+
+    const payload = events.map((event) => ({
+
+      id: event.id,
+      name: event.name,
+      description: event.description,
+      capacity: event.capacity,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      localId: event.localId,
+      categoryEventId: event.categoryEventId,
+      categoryEvent: event.categoryEvent.name,
+      localName: event.local.name,
+      addressStreet: event.local.address.street,
+      categoryEventName: event.categoryEvent.name,
+    }));
+
+
+
+    res.json(payload);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Unknown error occurred" });
+    }
+  }
+}
+
 // Obtener eventos por localId
 export const getEventsByLocalId: RequestHandler = async (req, res) => {
   try {

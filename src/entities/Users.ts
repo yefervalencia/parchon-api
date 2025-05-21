@@ -5,10 +5,12 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Roles } from "./Roles";
 import { Cities } from "./Cities";
+import { PushToken } from "./PushToken";
 
 @Index("email", ["email"], { unique: true })
 @Index("idx_city_id", ["cityId"], {})
@@ -69,4 +71,10 @@ export class Users extends BaseEntity{
   })
   @JoinColumn([{ name: "city_id", referencedColumnName: "id" }])
   city: Cities;
+
+  @OneToMany(() => PushToken, (pushToken) => pushToken.user, {
+    cascade: true,   
+    eager: false,   
+  })
+  pushTokens: PushToken[];
 }

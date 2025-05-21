@@ -48,6 +48,42 @@ export const getLocals: RequestHandler = async (req, res) => {
     }
   }
 };
+
+//get locals para el admin
+export const getLocalsAdmin: RequestHandler = async (req, res) => {
+  try {
+    const locals = await Locals.find({
+      relations: [
+        "address",
+        "address.city",
+        "categoryLocal",
+        "owner"          // <--- añadimos aquí al propietario
+      ],
+    })
+
+    // mapeamos a una forma más limpia
+    const payload = locals.map((l) => ({
+      id:         l.id,
+      name:       l.name,
+      description: l.description,
+      cellphone:  l.cellphone,
+      category:   l.categoryLocal?.name    ?? null,
+      categoryLocalId: l.categoryLocal?.id      ?? null,
+      street:     l.address?.street        ?? null,
+      city:       l.address?.city?.name    ?? null,
+      cityId:   l.address?.city?.id      ?? null,
+      owner:      l.owner
+        ? `${l.owner.name} ${l.owner.lastName}`
+        : null,
+      ownerId:    l.owner?.id             ?? null,
+    }))
+
+    res.json(payload)
+    //res.json(locals)
+  } catch (err: any) {
+    res.status(500).json({ message: err.message || "Unknown error occurred" })
+  }
+}
 export const getLocalsByOwnerId: RequestHandler = async (req, res): Promise<void> => {
   try {
     const { ownerId } = req.params;
