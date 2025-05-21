@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { CategoriesPlaces } from "../entities/CategoriesPlaces";
+import { Places } from "../entities/Places";
 
 // Crear una nueva categoría de lugar
 export const createCategoryPlace: RequestHandler = async (req, res) => {
@@ -99,3 +100,45 @@ export const deleteCategoryPlace: RequestHandler = async (req, res) => {
     }
   }
 };
+
+export const getPlacesByCategory: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const category = await CategoriesPlaces.findOneBy({ id: parseInt(id) });
+    if (!category) {
+      res.status(404).json({ message: "category not found" });
+    }
+
+    const places = await Places.find({
+      where: { categoryPlaceId: parseInt(id) },
+      relations : ['address', 'categoryPlace', 'address.city'],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        cellphone: true,
+        address: {
+          id: true,
+          street: true,
+          city : {
+            id:true,
+            name:true,
+          }as any,
+        }as any,
+        categoryPlace: {
+          id: true,
+          name:true,
+        }as any
+      }
+    });
+
+    res.json(places);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Unknown error occurred" });
+    }
+  }
+}; 

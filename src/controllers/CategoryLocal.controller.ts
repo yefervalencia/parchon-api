@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { CategoriesLocals } from "../entities/CategoriesLocals";
+import { Locals } from "../entities/Locals";
 
 // Crear una nueva categoría de local
 export const createCategoryLocal: RequestHandler = async (req, res) => {
@@ -99,3 +100,49 @@ export const deleteCategoryLocal: RequestHandler = async (req, res) => {
     }
   }
 };
+
+export const getLocalsByCategory: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const category = await CategoriesLocals.findOneBy({ id: parseInt(id) });
+    if (!category) {
+      res.status(404).json({ message: "category not found" });
+    }
+
+    const locals = await Locals.find({
+      where: { categoryLocalId: parseInt(id) },
+      relations: [
+        'address',
+        'address.city', 
+        'categoryLocal',
+      ],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        cellphone: true,
+        address: {
+          id:true,
+          street: true,
+          city:{
+            id:true,
+            name:true
+          }as any,
+        }as any,
+        categoryLocal: {
+          id: true,
+          name:true,
+        }as any
+      }
+    });
+
+    res.json(locals);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Unknown error occurred" });
+    }
+  }
+}; 

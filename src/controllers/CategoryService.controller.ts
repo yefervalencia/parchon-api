@@ -111,6 +111,28 @@ export const getServicesByCategory: RequestHandler = async (req, res) => {
 
     const services = await Services.find({
       where: { categoryServiceId: parseInt(id) },
+      relations: [
+        'address',
+        'address.city',
+        'categoryService'
+      ],
+      select: {
+        id:true,
+        name: true,
+        cellphone: true,
+        address: {
+          id: true,
+          street: true,
+          city: {
+            id: true,
+            name: true,
+          }as any,
+        }as any,
+        categoryService: {
+          id: true,
+          name: true,
+        }as any
+      }
     });
 
     res.json(services);

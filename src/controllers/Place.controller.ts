@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { Places } from "../entities/Places";
+import { ImagesPlaces } from "../entities/ImagesPlaces";
 
 // Crear un nuevo lugar
 export const createPlace: RequestHandler = async (req, res) => {
@@ -44,7 +45,29 @@ export const getPlace: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const place = await Places.findOneBy({ id: parseInt(id) });
+    const place = await Places.findOne({
+      where : { id: parseInt(id) },
+      relations : ['address', 'categoryPlace', 'address.city'],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        cellphone: true,
+        address: {
+          id: true,
+          street: true,
+          city : {
+            id:true,
+            name:true,
+          }as any,
+        }as any,
+        categoryPlace: {
+          id: true,
+          name:true,
+        }as any
+      }
+    }
+    );
 
     if (!place) {
       res.status(404).json({ message: "Place not found" });
@@ -95,6 +118,65 @@ export const deletePlace: RequestHandler = async (req, res) => {
     }
 
     res.sendStatus(204);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Unknown error occurred" });
+    }
+  }
+};
+
+// obtener las imagenes del lugar
+export const getPlaceImages: RequestHandler = async (req,res) => {
+  try {
+    const {id} =req.params;
+    const place = await Places.findOneBy({ id: parseInt(id)});
+    if(!place) {
+      res.status(404).json({ messsage : " place not found"});
+    }
+
+    const images= await ImagesPlaces.find({
+      where : { placeId: parseInt(id)},
+    });
+    res.json(images);
+  }catch(err){
+    if (err instanceof Error) {
+      res.status(500).json({message: err.message})
+    }else {
+      res.status(500).json({message: "uknow error ocurred"});
+    }
+  }
+};
+
+// Obtener los 3 lugares más recientes
+export const getLatestPlaces: RequestHandler = async (req, res) => {
+  try {
+    const places = await Places.find({
+      order: { id: "DESC" },
+      take: 3,
+      relations : ['address', 'categoryPlace', 'address.city'],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        cellphone: true,
+        address: {
+          id: true,
+          street: true,
+          city : {
+            id:true,
+            name:true,
+          }as any,
+        }as any,
+        categoryPlace: {
+          id: true,
+          name:true,
+        }as any
+      }
+    });
+
+    res.json(places);
   } catch (err) {
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });

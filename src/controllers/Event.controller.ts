@@ -110,7 +110,7 @@ export const getEvent: RequestHandler = async (req, res) => {
     //const event = await Events.findOneBy({ id: parseInt(id) });
     const event = await Events.findOne({
       where: { id: parseInt(id) },
-      relations: ["local", "categoryEvent", "local.address"],
+      relations: ["local", "categoryEvent", "local.address", "local.address.city"],
       select: {
         id: true,
         name: true,
@@ -126,6 +126,10 @@ export const getEvent: RequestHandler = async (req, res) => {
           address: {
             id: true,
             street: true,
+            city: {
+              id: true,
+              name: true,
+            }
           } as any,
         } as any,
         categoryEvent: {
@@ -207,6 +211,48 @@ export const getEventImages: RequestHandler = async (req, res) => {
     });
 
     res.json(images);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Unknown error occurred" });
+    }
+  }
+};
+
+
+// Obtener los 3 eventos más recientes
+export const getLatestEvents: RequestHandler = async (req, res) => {
+  try {
+    const events = await Events.find({
+      order: { id: "DESC" },
+      take: 3,
+      relations: ["local", "categoryEvent", "local.address"],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        capacity: true,
+        startDate: true,
+        endDate: true,
+        local: {
+          id: true,
+          name: true,
+          cellphone: true,
+          ownerId: true,
+          address: {
+            id: true,
+            street: true,
+          } as any,
+        } as any,
+        categoryEvent: {
+          id: true,
+          name: true,
+        } as any,
+      },
+    });
+
+    res.json(events);
   } catch (err) {
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });

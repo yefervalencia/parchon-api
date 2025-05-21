@@ -112,6 +112,29 @@ export const getEventsByCategory: RequestHandler = async (req, res) => {
 
     const events = await Events.find({
       where: { categoryEventId: parseInt(id) },
+      relations: ["local", "categoryEvent", "local.address"],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        capacity: true,
+        startDate: true,
+        endDate: true,
+        local: {
+          id: true,
+          name: true,
+          cellphone: true,
+          ownerId: true,
+          address: {
+            id: true,
+            street: true,
+          } as any,
+        } as any,
+        categoryEvent: {
+          id: true,
+          name: true,
+        } as any,
+      },
     });
 
     res.json(events);
@@ -122,4 +145,4 @@ export const getEventsByCategory: RequestHandler = async (req, res) => {
       res.status(500).json({ message: "Unknown error occurred" });
     }
   }
-};
+}; 

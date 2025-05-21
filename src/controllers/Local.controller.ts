@@ -1,5 +1,7 @@
 import { RequestHandler } from "express";
 import { Locals } from "../entities/Locals";
+import { ImagesLocals } from "../entities/ImagesLocals";
+import { Events } from "../entities/Events";
 
 // Crear un nuevo local
 export const createLocal: RequestHandler = async (req, res) => {
@@ -89,8 +91,26 @@ export const getLocal: RequestHandler = async (req, res) => {
       relations: [
         'address',
         'address.city', 
-        'categoryLocal'
-      ]
+        'categoryLocal',
+      ],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        cellphone: true,
+        address: {
+          id:true,
+          street: true,
+          city:{
+            id:true,
+            name:true
+          }as any,
+        }as any,
+        categoryLocal: {
+          id: true,
+          name:true,
+        }as any
+      }
     });
     
     if (!local) {
@@ -144,6 +164,114 @@ export const deleteLocal: RequestHandler = async (req, res) => {
     }
 
     res.sendStatus(204);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: "Unknown error occurred" });
+    }
+  }
+};
+
+// obtener las imagenes del local
+export const getLocalImages: RequestHandler = async (req,res) => {
+  try {
+    const {id} =req.params;
+    const local = await Locals.findOneBy({ id: parseInt(id)});
+    if(!local) {
+      res.status(404).json({ messsage : " service not found"});
+    }
+
+    const images= await ImagesLocals.find({
+      where : { localId: parseInt(id)},
+    });
+    res.json(images);
+  }catch(err){
+    if (err instanceof Error) {
+      res.status(500).json({message: err.message})
+    }else {
+      res.status(500).json({message: "uknow error ocurred"});
+    }
+  }
+};
+
+// obtener los eventos de ese local
+export const getLocalEvents: RequestHandler = async (req,res) => {
+  try {
+    const {id} =req.params;
+    const local = await Locals.findOneBy({ id: parseInt(id)});
+    if(!local) {
+      res.status(404).json({ messsage : " lcaol not found"});
+    }
+
+    const events= await Events.find({
+      where : { localId: parseInt(id)},
+      relations: ["local", "categoryEvent", "local.address"],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        capacity: true,
+        startDate: true,
+        endDate: true,
+        local: {
+          id: true,
+          name: true,
+          cellphone: true,
+          ownerId: true,
+          address: {
+            id: true,
+            street: true,
+          } as any,
+        } as any,
+        categoryEvent: {
+          id: true,
+          name: true,
+        } as any,
+      },
+    });
+    res.json(events);
+  }catch(err){
+    if (err instanceof Error) {
+      res.status(500).json({message: err.message})
+    }else {
+      res.status(500).json({message: "uknow error ocurred"});
+    }
+  }
+};
+
+// Obtener los 3 locales más recientes
+export const getLatestLocals: RequestHandler = async (req, res) => {
+  try {
+    const locals = await Locals.find({
+      order: { id: "DESC" }, // Usa "id" si no tienes createdAt
+      take: 3,
+      relations: [
+        'address',
+        'address.city', 
+        'categoryLocal',
+      ],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        cellphone: true,
+        address: {
+          id:true,
+          street: true,
+          city:{
+            id:true,
+            name:true
+          }as any,
+        }as any,
+        categoryLocal: {
+          id: true,
+          name:true,
+        }as any
+      }
+    });
+
+    res.json(locals);
   } catch (err) {
     if (err instanceof Error) {
       res.status(500).json({ message: err.message });

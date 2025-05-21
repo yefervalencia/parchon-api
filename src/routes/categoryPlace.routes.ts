@@ -5,6 +5,7 @@ import {
   getCategoryPlace,
   updateCategoryPlace,
   deleteCategoryPlace,
+  getPlacesByCategory,
 } from "../controllers/CategoryPlace.controller";
 
 const categoryPlaceRoutes = Router();
@@ -14,5 +15,6 @@ categoryPlaceRoutes.get("/", getCategoriesPlaces);
 categoryPlaceRoutes.get("/:id", getCategoryPlace);
 categoryPlaceRoutes.put("/:id", updateCategoryPlace);
 categoryPlaceRoutes.delete("/:id", deleteCategoryPlace);
+categoryPlaceRoutes.get("/:id/places", getPlacesByCategory);
 
 export default categoryPlaceRoutes;
